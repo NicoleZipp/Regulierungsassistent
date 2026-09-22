@@ -43,6 +43,14 @@ st.markdown("""
     font-size: 1.4rem;
     flex-shrink: 0;
 }
+@keyframes lupe-dreht {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.header-badge.laedt span {
+    display: inline-block;
+    animation: lupe-dreht 1s linear infinite;
+}
 .antwort-titel {
     font-size: 1.15rem;
     font-weight: 700;
@@ -124,15 +132,20 @@ Antwort:"""
     return antwort.content, treffer
 
 # --- Oberfläche ---
-st.markdown("""
-<div class="header-box">
-    <div>
-        <h1>📋 Regulierungs-Dokumenten-Assistent</h1>
-        <p>KI-Portfolio-Projekt · RAG-Prototyp zu Gasnetz-Regulierungstexten</p>
+def zeige_header(laedt=False):
+    badge_klasse = "header-badge laedt" if laedt else "header-badge"
+    header_platzhalter.markdown(f"""
+    <div class="header-box">
+        <div>
+            <h1>📋 Regulierungs-Dokumenten-Assistent</h1>
+            <p>KI-Portfolio-Projekt · RAG-Prototyp zu Gasnetz-Regulierungstexten</p>
+        </div>
+        <div class="{badge_klasse}"><span>🔍</span></div>
     </div>
-    <div class="header-badge">🔍</div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+
+header_platzhalter = st.empty()
+zeige_header(laedt=False)
 
 # Vorformulierte Beispielfragen als klickbare Chips
 if "frage_eingabe" not in st.session_state:
@@ -148,8 +161,10 @@ for spalte, beispiel in zip(spalten, beispielfragen):
 frage = st.text_input("Stelle eine Frage zu den Regulierungsdokumenten:", key="frage_eingabe")
 
 if st.button("Frage stellen") and frage:
+    zeige_header(laedt=True)
     with st.spinner("Suche relevante Textstellen und formuliere Antwort..."):
         antwort, quellen = frage_stellen(frage)
+    zeige_header(laedt=False)
 
     if antwort.strip().startswith("KEINE_INFORMATION"):
         st.info("Dazu finde ich in den Dokumenten keine Angabe.")
