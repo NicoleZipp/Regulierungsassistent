@@ -47,9 +47,25 @@ st.markdown("""
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
-.header-badge.laedt span {
+.lupe-dreht {
     display: inline-block;
     animation: lupe-dreht 1s linear infinite;
+}
+.lade-zeile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0.5rem 0 1rem 0;
+    font-size: 0.9rem;
+    color: #185FA5;
+}
+@keyframes flamme-wackelt {
+    0%, 100% { transform: rotate(-8deg); }
+    50% { transform: rotate(8deg); }
+}
+.header-badge.wackelt span {
+    display: inline-block;
+    animation: flamme-wackelt 0.4s ease-in-out infinite;
 }
 .antwort-titel {
     font-size: 1.15rem;
@@ -132,20 +148,20 @@ Antwort:"""
     return antwort.content, treffer
 
 # --- Oberfläche ---
-def zeige_header(laedt=False):
-    badge_klasse = "header-badge laedt" if laedt else "header-badge"
+def zeige_header(wackelt=False):
+    badge_klasse = "header-badge wackelt" if wackelt else "header-badge"
     header_platzhalter.markdown(f"""
     <div class="header-box">
         <div>
             <h1>📋 Regulierungs-Dokumenten-Assistent</h1>
             <p>KI-Portfolio-Projekt · RAG-Prototyp zu Gasnetz-Regulierungstexten</p>
         </div>
-        <div class="{badge_klasse}"><span>🔍</span></div>
+        <div class="{badge_klasse}"><span>🔥</span></div>
     </div>
     """, unsafe_allow_html=True)
 
 header_platzhalter = st.empty()
-zeige_header(laedt=False)
+zeige_header(wackelt=False)
 
 # Vorformulierte Beispielfragen als klickbare Chips
 if "frage_eingabe" not in st.session_state:
@@ -161,10 +177,15 @@ for spalte, beispiel in zip(spalten, beispielfragen):
 frage = st.text_input("Stelle eine Frage zu den Regulierungsdokumenten:", key="frage_eingabe")
 
 if st.button("Frage stellen") and frage:
-    zeige_header(laedt=True)
-    with st.spinner("Suche relevante Textstellen und formuliere Antwort..."):
-        antwort, quellen = frage_stellen(frage)
-    zeige_header(laedt=False)
+    zeige_header(wackelt=True)
+    lade_platzhalter = st.empty()
+    lade_platzhalter.markdown(
+        '<div class="lade-zeile"><span class="lupe-dreht">🔍</span> Suche läuft ...</div>',
+        unsafe_allow_html=True
+    )
+    antwort, quellen = frage_stellen(frage)
+    lade_platzhalter.empty()
+    zeige_header(wackelt=False)
 
     if antwort.strip().startswith("KEINE_INFORMATION"):
         st.info("Dazu finde ich in den Dokumenten keine Angabe.")
