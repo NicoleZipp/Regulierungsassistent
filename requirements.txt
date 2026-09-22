@@ -6,4 +6,4 @@ langchain-text-splitters
 langchain-groq
 chromadb
 sentence-transformers
-pypdf
+pypdf[crypto]
